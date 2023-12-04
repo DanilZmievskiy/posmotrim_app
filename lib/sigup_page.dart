@@ -173,7 +173,7 @@ class _SignUpPageState extends State<SignUpPage> {
       'is_superuser': false,
       'is_verified': false,
       'username': username,
-      'birthday': birthday + newformat,
+      'birthday': birthday + newformat
     };
     var body = json.encode(data);
 
