@@ -165,7 +165,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   signUp(String email, username, password, confirmpass, birthday) async {
     String newformat = "T00:00:00.000Z";
-    String today = DateFormat('yyyy-MM-ddTHH:mm:ss.S').format(DateTime.now()) + "Z";
 
     Map data = {
       'email': email,
@@ -175,7 +174,6 @@ class _SignUpPageState extends State<SignUpPage> {
       'is_verified': false,
       'username': username,
       'birthday': birthday + newformat,
-      'created_at': today
     };
     var body = json.encode(data);
 
