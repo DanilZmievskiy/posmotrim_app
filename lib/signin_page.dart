@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:posmotrim_app/sigup_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:posmotrim_app/main.dart';
+import 'package:posmotrim_app/home_page.dart';
 
 class SignInPage extends StatefulWidget {
 

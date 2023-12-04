@@ -14,7 +14,7 @@ class MoviePage extends StatefulWidget {
 }
 
 class _MoviePageState extends State<MoviePage> {
-  late Map<String, dynamic>? movieData;
+  Map<String, dynamic>? movieData;
   List<dynamic>? recommendations;
 
   @override
