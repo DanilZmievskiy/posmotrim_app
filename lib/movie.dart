@@ -24,7 +24,7 @@ class _MoviePageState extends State<MoviePage> {
   }
 
   Future<void> fetchMovieData() async {
-    final response = await http.get(Uri.parse('${dotenv.env['LOGIN_HTTP']}/films/${widget.filmId}'));
+    final response = await http.get(Uri.parse('${dotenv.env['BACKEND_HTTP']}/films/${widget.filmId}'));
     if (response.statusCode == 200) {
       setState(() {
         final decodedResponse = utf8.decode(response.bodyBytes);
@@ -37,7 +37,7 @@ class _MoviePageState extends State<MoviePage> {
   }
 
   Future<void> fetchRecommendations() async {
-    final response = await http.get(Uri.parse('${dotenv.env['LOGIN_HTTP']}/films/${widget.filmId}/recommendations'));
+    final response = await http.get(Uri.parse('${dotenv.env['BACKEND_HTTP']}/films/${widget.filmId}/recommendations'));
     if (response.statusCode == 200) {
       setState(() {
         final decodedResponse = utf8.decode(response.bodyBytes);

@@ -174,13 +174,13 @@ class _SignUpPageState extends State<SignUpPage> {
       'is_superuser': false,
       'is_verified': false,
       'username': username,
-      'birthday': "2023-12-03T18:24:41.038Z",
-      'created_at': "2023-12-02T18:02:05.899147Z"
+      'birthday': birthday + newformat,
+      'created_at': today
     };
     var body = json.encode(data);
 
     var response = await http.post(
-        Uri.parse(dotenv.env['SIGNUP_HTTP']!),
+        Uri.parse('${dotenv.env['BACKEND_HTTP']}/auth/register'),
         headers: {"Content-Type": "application/json"},
         body: body
     );

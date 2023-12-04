@@ -107,7 +107,7 @@ class _SignInPageState extends State<SignInPage> {
     var jsonData = null;
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var response = await http.post(
-      Uri.parse(dotenv.env['LOGIN_HTTP']!),
+      Uri.parse('${dotenv.env['BACKEND_HTTP']}/auth/jwt/login'),
       body: data
     );
     if(response.statusCode == 200) {
