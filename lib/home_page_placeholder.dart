@@ -94,12 +94,12 @@ class _MainPagePlaceholderState extends State<MainPagePlaceholder>{
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.all(12),
-              itemCount: movieData!.length,
+              itemCount: movieData.length,
               separatorBuilder: (context, index) {
                 return const SizedBox(width: 12);
               },
               itemBuilder: (context, index) {
-                final movie = movieData![index];
+                final movie = movieData[index];
                 return movieCard(movie);
               },
             ),
@@ -121,12 +121,12 @@ class _MainPagePlaceholderState extends State<MainPagePlaceholder>{
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.all(12),
-              itemCount: horrorData!.length,
+              itemCount: horrorData.length,
               separatorBuilder: (context, index) {
                 return const SizedBox(width: 12);
               },
               itemBuilder: (context, index) {
-                final movie = horrorData![index];
+                final movie = horrorData[index];
                 return movieCard(movie);
               },
             ),
@@ -148,12 +148,12 @@ class _MainPagePlaceholderState extends State<MainPagePlaceholder>{
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.all(12),
-              itemCount: dramaData!.length,
+              itemCount: dramaData.length,
               separatorBuilder: (context, index) {
                 return const SizedBox(width: 12);
               },
               itemBuilder: (context, index) {
-                final movie = dramaData![index];
+                final movie = dramaData[index];
                 return movieCard(movie);
               },
             ),
@@ -177,16 +177,22 @@ class _MainPagePlaceholderState extends State<MainPagePlaceholder>{
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          movie['name'].toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: 'Inter',
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+        Container(
+          width: 200, // Задаем фиксированную ширину контейнера
+          child: Align(
+            alignment: Alignment.centerLeft, // Выравнивание текста по левому краю
+            child: Text(
+              movie['name'].toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'Inter',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2, // Максимальное количество строк
+              overflow: TextOverflow.ellipsis, // Обрезание текста, если не помещается
+            ),
           ),
-          maxLines: 2, // Максимальное количество строк
-          overflow: TextOverflow.ellipsis, // Обрезание текста, если не помещается
         ),
       ],
     ),
