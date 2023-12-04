@@ -33,7 +33,6 @@ class _UserPageState extends State<UserPage>{
   Future<void> fetchCurrentUser() async {
     sharedPreferences = await SharedPreferences.getInstance();
     String? token = sharedPreferences.getString('token');
-    print("Bearer $token");
     final response = await http.get(
         Uri.parse('${dotenv.env['BACKEND_HTTP']}/users/me'),
         headers: {
@@ -41,7 +40,6 @@ class _UserPageState extends State<UserPage>{
           "Authorization": "Bearer $token"
         }
     );
-    print(response.body);
     if (response.statusCode == 200) {
       setState(() {
         currentUser = json.decode(response.body);
