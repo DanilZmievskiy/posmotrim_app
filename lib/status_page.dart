@@ -50,6 +50,25 @@ class _StatusPageState extends State<StatusPage>{
     }
   }
 
+  Future refresh() async {
+    String? token = sharedPreferences.getString('token');
+    final response = await http.get(
+        Uri.parse('${dotenv.env['BACKEND_HTTP']}/statuses/${currentUser!['id']}'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        }
+    );
+    if (response.statusCode == 200) {
+      setState(() {
+        userStatus = json.decode(response.body);
+        print(userStatus);
+      });
+    } else {
+      throw Exception('Не удалось получить данные о статусах пользователя');
+    }
+  }
+
   Future<void> fetchUserStatus() async {
     String? token = sharedPreferences.getString('token');
     final response = await http.get(
@@ -141,17 +160,20 @@ class _StatusPageState extends State<StatusPage>{
           children: [
             Container(
               color: Colors.black,
-              child: GridView.builder(
-                itemCount: userStatus.length,
-                padding: EdgeInsets.only(top: 15.0),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-                itemBuilder: (context, index) {
-                  final status = userStatus[index];
-                  final movie_id = status['film_id'];
-                  return movieCard(movie_id);
-                },
+              child: RefreshIndicator(
+                onRefresh: refresh,
+                child: GridView.builder(
+                  itemCount: userStatus.length,
+                  padding: EdgeInsets.only(top: 15.0),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                  itemBuilder: (context, index) {
+                    final status = userStatus[index];
+                    final movie_id = status['film_id'];
+                    return movieCard(movie_id);
+                  },
 
-              ),
+                ),
+              )
             ),
             Container(
               color: Colors.blueGrey,
