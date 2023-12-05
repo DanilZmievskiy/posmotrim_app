@@ -78,8 +78,6 @@ class _MoviePageState extends State<MoviePage> {
   }
 
   Future<void> fetchCurrentStatus() async {
-    print(currentUser);
-    print(movieData);
     String? token = sharedPreferences.getString('token');
     final response = await http.get(
         Uri.parse('${dotenv.env['BACKEND_HTTP']}/statuses/${currentUser!['id']}/${movieData!['kinopoisk_id']}'),
@@ -95,7 +93,6 @@ class _MoviePageState extends State<MoviePage> {
         dropdownValue = currentStatus!['status'];
       });
     } else if(response.statusCode == 404) {
-      print(response.body);
       setState(() {
         currentStatus = null;
       });
@@ -285,8 +282,6 @@ class _MoviePageState extends State<MoviePage> {
   }
 
   updateStatus (String new_status) async {
-    //var updated_status = utf8.encode(new_status);
-    print(new_status);
     Map data = {
       "user_id": currentUser!['id'],
       "film_id": movieData!['kinopoisk_id'],
