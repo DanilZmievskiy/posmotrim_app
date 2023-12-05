@@ -23,6 +23,10 @@ class _StatusPageState extends State<StatusPage>{
   late SharedPreferences sharedPreferences;
   Map<String, dynamic>? currentUser;
   var userStatus = [];
+  var watchSt = [];
+  var watchedSt = [];
+  var willSt = [];
+  var quitSt = [];
 
   @override
   void initState() {
@@ -61,8 +65,22 @@ class _StatusPageState extends State<StatusPage>{
     );
     if (response.statusCode == 200) {
       setState(() {
-        userStatus = json.decode(response.body);
-        print(userStatus);
+        userStatus = json.decode(utf8.decode(response.bodyBytes));
+        watchedSt.clear();
+        watchSt.clear();
+        willSt.clear();
+        quitSt.clear();
+        for(var st in userStatus) {
+          if(st['status'] == 'Смотрю') {
+            watchSt.add(st);
+          } else if(st['status'] == 'Посмотрел') {
+            watchedSt.add(st);
+          } else if(st['status'] == 'Буду смотреть') {
+            willSt.add(st);
+          } else if(st['status'] == 'Бросил') {
+            quitSt.add(st);
+          }
+        }
       });
     } else {
       throw Exception('Не удалось получить данные о статусах пользователя');
@@ -80,8 +98,18 @@ class _StatusPageState extends State<StatusPage>{
     );
     if (response.statusCode == 200) {
       setState(() {
-        userStatus = json.decode(response.body);
-        print(userStatus);
+        userStatus = json.decode(utf8.decode(response.bodyBytes));
+        for(var st in userStatus) {
+          if(st['status'] == 'Смотрю') {
+            watchedSt.add(st);
+          } else if(st['status'] == 'Посмотрел') {
+            watchedSt.add(st);
+          } else if(st['status'] == 'Буду смотреть') {
+            willSt.add(st);
+          } else if(st['status'] == 'Бросил') {
+            quitSt.add(st);
+          }
+        }
       });
     } else {
       throw Exception('Не удалось получить данные о статусах пользователя');
@@ -125,7 +153,7 @@ class _StatusPageState extends State<StatusPage>{
                       border: Border.all(color: Colors.black, width: 1)),
                   child: Align(
                       alignment: Alignment.center,
-                      child: Text('Посмотрел')),
+                      child: Text('Посмотрел', style: TextStyle(color: Colors.blue),)),
                 ),
               ),
               Tab(
@@ -137,7 +165,7 @@ class _StatusPageState extends State<StatusPage>{
                       border: Border.all(color: Colors.black, width: 1)),
                   child: Align(
                       alignment: Alignment.center,
-                      child: Text('Буду смотреть')),
+                      child: Text('Буду смотреть', style: TextStyle(color: Colors.yellow),)),
                 ),
               ),
               Tab(
@@ -149,7 +177,7 @@ class _StatusPageState extends State<StatusPage>{
                       border: Border.all(color: Colors.black, width: 1)),
                   child: Align(
                       alignment: Alignment.center,
-                      child: Text('Бросил')),
+                      child: Text('Бросил', style: TextStyle(color: Colors.red))),
                 ),
               )
             ],
@@ -159,33 +187,68 @@ class _StatusPageState extends State<StatusPage>{
         body: TabBarView(
           children: [
             Container(
-              color: Colors.black,
+              color: Colors.grey.shade900,
               child: RefreshIndicator(
                 onRefresh: refresh,
                 child: GridView.builder(
-                  itemCount: userStatus.length,
+                  itemCount: watchSt.length,
                   padding: EdgeInsets.only(top: 15.0),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                   itemBuilder: (context, index) {
-                    final status = userStatus[index];
+                    final status = watchSt[index];
                     final movie_id = status['film_id'];
                     return movieCard(movie_id);
                   },
-
                 ),
               )
             ),
             Container(
-              color: Colors.blueGrey,
-              child: const Icon(Icons.home),
+                color: Colors.grey.shade900,
+                child: RefreshIndicator(
+                  onRefresh: refresh,
+                  child: GridView.builder(
+                    itemCount: watchedSt.length,
+                    padding: EdgeInsets.only(top: 15.0),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      final status = watchedSt[index];
+                      final movie_id = status['film_id'];
+                      return movieCard(movie_id);
+                    },
+                  ),
+                )
             ),
             Container(
-              color: Colors.yellowAccent,
-              child: const Icon(Icons.home),
+                color: Colors.grey.shade900,
+                child: RefreshIndicator(
+                  onRefresh: refresh,
+                  child: GridView.builder(
+                    itemCount: willSt.length,
+                    padding: EdgeInsets.only(top: 15.0),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      final status = willSt[index];
+                      final movie_id = status['film_id'];
+                      return movieCard(movie_id);
+                    },
+                  ),
+                )
             ),
             Container(
-              color: Colors.redAccent,
-              child: const Icon(Icons.home),
+                color: Colors.grey.shade900,
+                child: RefreshIndicator(
+                  onRefresh: refresh,
+                  child: GridView.builder(
+                    itemCount: quitSt.length,
+                    padding: EdgeInsets.only(top: 15.0),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      final status = quitSt[index];
+                      final movie_id = status['film_id'];
+                      return movieCard(movie_id);
+                    },
+                  ),
+                )
             )
           ],
         ),
