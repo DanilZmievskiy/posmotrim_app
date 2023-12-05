@@ -31,26 +31,37 @@ class _SignUpPageState extends State<SignUpPage> {
             end: Alignment.bottomCenter
         ),
       ),
-      child: _isLoading ? Center(child: CircularProgressIndicator()) : ListView(
-        children: <Widget>[
-          headerSection(),
-          textSection(),
-          buttonSection(),
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
-              },
-              child: Text("Eсть аккаунт?  Ввойди!", style: TextStyle(color: Colors.white))
+      child: _isLoading ? Center(child: CircularProgressIndicator()) : Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              headerSection(),
+              textSection(),
+              buttonSection(),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
+                },
+                child: Text("Eсть аккаунт?  Ввойди!", style: TextStyle(color: Colors.white))
+              ),
+            ],
           ),
-        ],
-      ),
+        )
+      )
     );
   }
 
   Container headerSection() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 70.0, vertical: 150.0),
-      child: Text("Posmotrim", style: TextStyle(color: Colors.white)),
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 100.0),
+      child: Image.asset(
+        "lib/images/logo.png",
+        height: 200,
+        width: 300,
+      ),
     );
   }
 
