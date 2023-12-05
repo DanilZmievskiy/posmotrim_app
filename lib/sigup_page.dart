@@ -175,36 +175,60 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   signUp(String email, username, password, confirmpass, birthday) async {
-    String newformat = "T00:00:00.000Z";
-
-    Map data = {
-      'email': email,
-      'password': password,
-      'is_active': true,
-      'is_superuser': false,
-      'is_verified': false,
-      'username': username,
-      'birthday': birthday + newformat
-    };
-    var body = json.encode(data);
-
-    var response = await http.post(
-        Uri.parse('${dotenv.env['BACKEND_HTTP']}/auth/register'),
-        headers: {"Content-Type": "application/json"},
-        body: body
-    );
-    //print(response);
-    //print(json.decode(response.body));
-    if(response.statusCode == 201) {
-      print('OKKKK');
+    if(password != confirmpass) {
       setState(() {
         _isLoading = false;
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
       });
+      return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Вы ввели разные пароли! Попробуйте еще раз.'),
+            content: const Text(''),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
     else {
-      print("ERRRRROOOORRRR");
-      print(response.body);
+      String newformat = "T00:00:00.000Z";
+
+      Map data = {
+        'email': email,
+        'password': password,
+        'is_active': true,
+        'is_superuser': false,
+        'is_verified': false,
+        'username': username,
+        'birthday': birthday + newformat
+      };
+      var body = json.encode(data);
+
+      var response = await http.post(
+          Uri.parse('${dotenv.env['BACKEND_HTTP']}/auth/register'),
+          headers: {"Content-Type": "application/json"},
+          body: body
+      );
+      //print(response);
+      //print(json.decode(response.body));
+      if(response.statusCode == 201) {
+        print('OKKKK');
+        setState(() {
+          _isLoading = false;
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
+        });
+      }
+      else {
+        print("ERRRRROOOORRRR");
+        print(response.body);
+      }
     }
   }
 
