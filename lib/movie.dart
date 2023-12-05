@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MoviePage extends StatefulWidget {
@@ -14,8 +15,15 @@ class MoviePage extends StatefulWidget {
 }
 
 class _MoviePageState extends State<MoviePage> {
+
+  late SharedPreferences sharedPreferences;
+
   Map<String, dynamic>? movieData;
   List<dynamic>? recommendations;
+  Map<String, dynamic>? currentUser;
+  Map<String, dynamic>? currentStatus;
+
+  var dropdownValue;
 
   @override
   void initState() {
@@ -31,6 +39,7 @@ class _MoviePageState extends State<MoviePage> {
         movieData = json.decode(decodedResponse);
       });
       fetchRecommendations();
+      fetchCurrentUser();
     } else {
       throw Exception('Не удалось получить данные о фильме');
     }
@@ -42,6 +51,53 @@ class _MoviePageState extends State<MoviePage> {
       setState(() {
         final decodedResponse = utf8.decode(response.bodyBytes);
         recommendations = json.decode(decodedResponse);
+      });
+    } else {
+      throw Exception('Не удалось получить рекомендации');
+    }
+  }
+
+  Future<void> fetchCurrentUser() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+    String? token = sharedPreferences.getString('token');
+    final response = await http.get(
+        Uri.parse('${dotenv.env['BACKEND_HTTP']}/users/me'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        }
+    );
+    if (response.statusCode == 200) {
+      setState(() {
+        currentUser = json.decode(response.body);
+      });
+      fetchCurrentStatus();
+    } else {
+      throw Exception('Не удалось получить данные о пользователе');
+    }
+  }
+
+  Future<void> fetchCurrentStatus() async {
+    print(currentUser);
+    print(movieData);
+    String? token = sharedPreferences.getString('token');
+    final response = await http.get(
+        Uri.parse('${dotenv.env['BACKEND_HTTP']}/statuses/${currentUser!['id']}/${movieData!['kinopoisk_id']}'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        }
+    );
+    if (response.statusCode == 200) {
+      setState(() {
+        final decodedResponse = utf8.decode(response.bodyBytes);
+        currentStatus = json.decode(decodedResponse);
+        dropdownValue = currentStatus!['status'];
+      });
+    } else if(response.statusCode == 404) {
+      print(response.body);
+      setState(() {
+        currentStatus = null;
       });
     } else {
       throw Exception('Не удалось получить рекомендации');
@@ -119,6 +175,40 @@ class _MoviePageState extends State<MoviePage> {
                       RoundedInfoBox(
                         value: '${movieData!['year']}',
                       ),
+                      DropdownButton<String>(
+                        value: dropdownValue,
+                        icon: const Icon(Icons.bookmark_border),
+                        style: const TextStyle(color: Colors.white),
+                        dropdownColor: Colors.black,
+                        underline: Container(
+                          height: 2,
+                          color: Colors.white,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            dropdownValue = newValue!;
+                          });
+                          updateStatus(newValue!);
+                        },
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'Смотрю',
+                            child: Text("Смотрю"),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Посмотрел',
+                            child: Text("Посмотрел"),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Буду смотреть',
+                            child: Text("Буду смотреть"),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Бросил',
+                            child: Text("Бросил"),
+                          )
+                        ],
+                      )
                     ],
                   ),
                   SizedBox(height: 20),
@@ -192,6 +282,32 @@ class _MoviePageState extends State<MoviePage> {
         child: CircularProgressIndicator(),
       ),
     );
+  }
+
+  updateStatus (String new_status) async {
+    //var updated_status = utf8.encode(new_status);
+    print(new_status);
+    Map data = {
+      "user_id": currentUser!['id'],
+      "film_id": movieData!['kinopoisk_id'],
+      "status": new_status
+    };
+
+    String? token = sharedPreferences.getString('token');
+    var body = json.encode(data);
+    //print(body);
+    final response = await http.post(
+        Uri.parse('${dotenv.env['BACKEND_HTTP']}//statuses/update/{user_id}/{film_id}/{status}/{rating}'),
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Authorization": "Bearer $token"
+        },
+      body: body
+    );
+    if(response.statusCode != 200) {
+      print(response.body);
+    }
+
   }
 }
 
