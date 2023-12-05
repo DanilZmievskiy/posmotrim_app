@@ -25,18 +25,17 @@ class _MainPageState extends State<MainPage>{
 
   int _selectedIndex = 0;
 
-  final _widgetOptions = [
-    MainPagePlaceholder(),
-    StatusPage(),
-    UserPage()
-  ];
-
   @override
   void initState() {
     checkLoginStatus();
     super.initState();
   }
 
+  final _widgetOptions = [
+    MainPagePlaceholder(),
+    StatusPage(),
+    UserPage()
+  ];
 
   checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
